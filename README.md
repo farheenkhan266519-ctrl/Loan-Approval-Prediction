@@ -109,30 +109,26 @@ The trained model was saved as:
 
 ## 📈 Model Evaluation
 
-The model was evaluated using the following metrics:
+The Logistic Regression model was evaluated using Accuracy, Precision, Recall, F1-Score, and ROC-AUC.
 
-* Accuracy
-* Precision
-* Recall
-* F1-Score
-* Confusion Matrix
-* ROC-AUC
+| Metric    | Result |
+| --------- | -----: |
+| Accuracy  | 84.55% |
+| Precision | 82.35% |
+| Recall    | 98.82% |
+| F1-Score  | 89.84% |
+| ROC-AUC   | 84.18% |
 
-These metrics were used to understand how well the model classified loan applications.
+### Model Analysis
 
-### Model Results
+The model achieved an accuracy of **84.55%** on the test data.
 
-Add your final results here:
+The recall was **98.82%**, meaning the model correctly identified most of the positive loan approval cases in the test set.
 
-| Metric    |          Result |
-| --------- | --------------: |
-| Accuracy  | Add your result |
-| Precision | Add your result |
-| Recall    | Add your result |
-| F1-Score  | Add your result |
-| ROC-AUC   | Add your result |
+The F1-Score of **89.84%** shows a balance between precision and recall.
 
----
+The ROC-AUC score of **84.18%** indicates that the model has useful ability to distinguish between the two loan-status classes.
+
 
 ## 🔮 Prediction
 
