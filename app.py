@@ -2,11 +2,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# =========================================================
-
-# PAGE SETTINGS
-
-# =========================================================
+# Page settings
 
 st.set_page_config(
 page_title="Loan Approval Prediction",
@@ -14,27 +10,15 @@ page_icon="🏦",
 layout="centered"
 )
 
-# =========================================================
-
-# LOAD TRAINED MODEL
-
-# =========================================================
-
-# LOAD TRAINED MODEL
-# =========================================================
+# Load trained model
 
 @st.cache_resource
 def load_model():
-    return joblib.load("loan_model.pkl")
-
+return joblib.load("loan_model.pkl")
 
 model = load_model()
 
-# =========================================================
-
-# TITLE
-
-# =========================================================
+# Title
 
 st.title("🏦 Loan Approval Prediction")
 
@@ -48,24 +32,19 @@ st.info(
 "for demonstration purposes. It is not an actual bank decision."
 )
 
-# =========================================================
-
-# APPLICANT INFORMATION
-
-# =========================================================
+# Applicant Information
 
 st.header("👤 Applicant Information")
 
 col1, col2 = st.columns(2)
 
 with col1:
-
-```
 gender = st.selectbox(
-    "Gender",
-    ["Female", "Male"]
+"Gender",
+["Female", "Male"]
 )
 
+```
 married = st.selectbox(
     "Married",
     ["No", "Yes"]
@@ -83,13 +62,12 @@ education = st.selectbox(
 ```
 
 with col2:
-
-```
 self_employed = st.selectbox(
-    "Self Employed",
-    ["No", "Yes"]
+"Self Employed",
+["No", "Yes"]
 )
 
+```
 property_area = st.selectbox(
     "Property Area",
     ["Rural", "Semiurban", "Urban"]
@@ -101,11 +79,7 @@ credit_history = st.selectbox(
 )
 ```
 
-# =========================================================
-
-# FINANCIAL INFORMATION
-
-# =========================================================
+# Financial Information
 
 st.header("💰 Financial Information")
 
@@ -137,17 +111,12 @@ value=360,
 step=30
 )
 
-# =========================================================
-
-# PREDICTION
-
-# =========================================================
+# Prediction
 
 if st.button("🔮 Predict Loan Approval", type="primary"):
 
 ```
 try:
-
     # Create input DataFrame using the exact model columns
     input_data = pd.DataFrame(
         0,
@@ -155,26 +124,17 @@ try:
         columns=model.feature_names_in_
     )
 
-    # -------------------------------------------------
     # Numerical features
-    # -------------------------------------------------
-
     input_data.loc[0, "ApplicantIncome"] = applicant_income
-
     input_data.loc[0, "CoapplicantIncome"] = coapplicant_income
-
     input_data.loc[0, "LoanAmount"] = loan_amount
-
     input_data.loc[0, "Loan_Amount_Term"] = loan_term
 
     input_data.loc[0, "Credit_History"] = (
         1 if credit_history == "Good (1)" else 0
     )
 
-    # -------------------------------------------------
     # Categorical features
-    # -------------------------------------------------
-
     if gender == "Male":
         input_data.loc[0, "Gender_Male"] = 1
 
@@ -183,10 +143,8 @@ try:
 
     if dependents == "1":
         input_data.loc[0, "Dependents_1"] = 1
-
     elif dependents == "2":
         input_data.loc[0, "Dependents_2"] = 1
-
     elif dependents == "3+":
         input_data.loc[0, "Dependents_3+"] = 1
 
@@ -198,24 +156,17 @@ try:
 
     if property_area == "Semiurban":
         input_data.loc[0, "Property_Area_Semiurban"] = 1
-
     elif property_area == "Urban":
         input_data.loc[0, "Property_Area_Urban"] = 1
 
-    # -------------------------------------------------
     # Make prediction
-    # -------------------------------------------------
-
     prediction = model.predict(input_data)[0]
 
     probabilities = model.predict_proba(input_data)[0]
 
     classes = list(model.classes_)
 
-    # -------------------------------------------------
     # Find approval probability
-    # -------------------------------------------------
-
     approval_probability = None
 
     if "Y" in classes:
@@ -223,32 +174,18 @@ try:
             classes.index("Y")
         ]
 
-    # -------------------------------------------------
     # Display result
-    # -------------------------------------------------
-
     st.divider()
 
     st.header("📊 Prediction Result")
 
     if str(prediction).upper() == "Y":
-
-        st.success(
-            "✅ Loan Prediction: APPROVED"
-        )
-
+        st.success("✅ Loan Prediction: APPROVED")
     else:
+        st.error("❌ Loan Prediction: REJECTED")
 
-        st.error(
-            "❌ Loan Prediction: REJECTED"
-        )
-
-    # -------------------------------------------------
     # Approval probability
-    # -------------------------------------------------
-
     if approval_probability is not None:
-
         st.metric(
             "Estimated Approval Probability",
             f"{approval_probability * 100:.2f}%"
@@ -258,37 +195,21 @@ try:
             float(approval_probability)
         )
 
-    # -------------------------------------------------
     # Applicant Summary
-    # -------------------------------------------------
-
     st.subheader("👤 Applicant Summary")
 
     summary_col1, summary_col2 = st.columns(2)
 
     with summary_col1:
-
         st.write(f"**Gender:** {gender}")
-
         st.write(f"**Married:** {married}")
-
         st.write(f"**Dependents:** {dependents}")
-
         st.write(f"**Education:** {education}")
 
     with summary_col2:
-
-        st.write(
-            f"**Self Employed:** {self_employed}"
-        )
-
-        st.write(
-            f"**Property Area:** {property_area}"
-        )
-
-        st.write(
-            f"**Credit History:** {credit_history}"
-        )
+        st.write(f"**Self Employed:** {self_employed}")
+        st.write(f"**Property Area:** {property_area}")
+        st.write(f"**Credit History:** {credit_history}")
 
     st.caption(
         "Prediction is based on the trained Logistic Regression "
@@ -296,7 +217,6 @@ try:
     )
 
 except Exception as e:
-
     st.error(
         "An error occurred while making the prediction."
     )
