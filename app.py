@@ -13,8 +13,7 @@ model = joblib.load("loan_model.pkl")
 st.title("🏦 Loan Approval Prediction")
 
 st.write(
-    "Enter applicant details to predict the loan approval status "
-    "using a trained Machine Learning model."
+    "Enter applicant details to predict the loan approval status."
 )
 
 st.info(
@@ -24,51 +23,61 @@ st.info(
 
 st.header("👤 Applicant Information")
 
-col1, col2 = st.columns(2)
+gender = st.selectbox(
+    "Gender",
+    ["Female", "Male"]
+)
 
-with col1:
-    gender = st.selectbox("Gender", ["Female", "Male"])
-    married = st.selectbox("Married", ["No", "Yes"])
-    dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
-    education = st.selectbox(
-        "Education",
-        ["Graduate", "Not Graduate"]
-    )
+married = st.selectbox(
+    "Married",
+    ["No", "Yes"]
+)
 
-with col2:
-    self_employed = st.selectbox(
-        "Self Employed",
-        ["No", "Yes"]
-    )
-    property_area = st.selectbox(
-        "Property Area",
-        ["Rural", "Semiurban", "Urban"]
-    )
-    credit_history = st.selectbox(
-        "Credit History",
-        ["Good (1)", "Poor (0)"]
-    )
+dependents = st.selectbox(
+    "Dependents",
+    ["0", "1", "2", "3+"]
+)
+
+education = st.selectbox(
+    "Education",
+    ["Graduate", "Not Graduate"]
+)
+
+self_employed = st.selectbox(
+    "Self Employed",
+    ["No", "Yes"]
+)
+
+property_area = st.selectbox(
+    "Property Area",
+    ["Rural", "Semiurban", "Urban"]
+)
+
+credit_history = st.selectbox(
+    "Credit History",
+    ["Poor (0)", "Good (1)"]
+)
 
 st.header("💰 Financial Information")
 
 applicant_income = st.number_input(
     "Applicant Income",
     min_value=0,
-    value=5000,
+    value=10000,
     step=500
 )
 
 coapplicant_income = st.number_input(
     "Coapplicant Income",
     min_value=0,
-    value=0,
+    value=5000,
     step=500
 )
 
 loan_amount = st.number_input(
     "Loan Amount (in thousands)",
     min_value=0,
-    value=150,
+    value=100,
     step=10
 )
 
@@ -79,7 +88,12 @@ loan_term = st.number_input(
     step=30
 )
 
-if st.button("🔮 Predict Loan Approval", type="primary"):
+predict_button = st.button(
+    "🔮 Predict Loan Approval",
+    type="primary"
+)
+
+if predict_button:
 
     input_data = pd.DataFrame(
         0,
@@ -92,9 +106,10 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
     input_data.loc[0, "LoanAmount"] = loan_amount
     input_data.loc[0, "Loan_Amount_Term"] = loan_term
 
-    input_data.loc[0, "Credit_History"] = (
-        1 if credit_history == "Good (1)" else 0
-    )
+    if credit_history == "Good (1)":
+        input_data.loc[0, "Credit_History"] = 1
+    else:
+        input_data.loc[0, "Credit_History"] = 0
 
     if gender == "Male":
         input_data.loc[0, "Gender_Male"] = 1
@@ -104,9 +119,11 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
 
     if dependents == "1":
         input_data.loc[0, "Dependents_1"] = 1
-    elif dependents == "2":
+
+    if dependents == "2":
         input_data.loc[0, "Dependents_2"] = 1
-    elif dependents == "3+":
+
+    if dependents == "3+":
         input_data.loc[0, "Dependents_3+"] = 1
 
     if education == "Not Graduate":
@@ -117,7 +134,8 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
 
     if property_area == "Semiurban":
         input_data.loc[0, "Property_Area_Semiurban"] = 1
-    elif property_area == "Urban":
+
+    if property_area == "Urban":
         input_data.loc[0, "Property_Area_Urban"] = 1
 
     prediction = model.predict(input_data)[0]
@@ -126,21 +144,20 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
 
     classes = list(model.classes_)
 
-    if "Y" in classes:
-        approval_probability = probabilities[classes.index("Y")]
+    if 1 in classes:
+        approval_index = classes.index(1)
+        approval_probability = probabilities[approval_index]
     else:
-        approval_probability = None
+        approval_probability = 0
 
     st.divider()
 
     st.header("📊 Prediction Result")
 
-    if str(prediction).upper() == "Y":
-        st.success("✅ Loan Prediction: APPROVED")
-    else:
-        st.error("❌ Loan Prediction: REJECTED")
+    if prediction == 1:
 
-    if approval_probability is not None:
+        st.success("✅ Loan Prediction: APPROVED")
+
         st.metric(
             "Estimated Approval Probability",
             f"{approval_probability * 100:.2f}%"
@@ -148,22 +165,18 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
 
         st.progress(float(approval_probability))
 
-    st.subheader("👤 Applicant Summary")
+    else:
 
-    summary_col1, summary_col2 = st.columns(2)
+        st.error("❌ Loan Prediction: REJECTED")
 
-    with summary_col1:
-        st.write(f"**Gender:** {gender}")
-        st.write(f"**Married:** {married}")
-        st.write(f"**Dependents:** {dependents}")
-        st.write(f"**Education:** {education}")
+        st.metric(
+            "Estimated Approval Probability",
+            f"{approval_probability * 100:.2f}%"
+        )
 
-    with summary_col2:
-        st.write(f"**Self Employed:** {self_employed}")
-        st.write(f"**Property Area:** {property_area}")
-        st.write(f"**Credit History:** {credit_history}")
+        st.progress(float(approval_probability))
 
     st.caption(
-        "Prediction is based on the trained Logistic Regression "
-        "model and the information entered above."
+        "Prediction is based on the trained Logistic Regression model "
+        "and the information entered above."
     )
