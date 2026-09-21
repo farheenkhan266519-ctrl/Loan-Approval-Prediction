@@ -144,10 +144,7 @@ if st.button("🔮 Predict Loan Approval", type="primary"):
 ```
 try:
 
-    # -------------------------------------------------
-    # Create input DataFrame using model columns
-    # -------------------------------------------------
-
+    # Create input DataFrame using the exact model columns
     input_data = pd.DataFrame(
         0,
         index=[0],
@@ -258,10 +255,10 @@ try:
         )
 
     # -------------------------------------------------
-    # Applicant summary
+    # Applicant Summary
     # -------------------------------------------------
 
-    st.subheader("Applicant Summary")
+    st.subheader("👤 Applicant Summary")
 
     summary_col1, summary_col2 = st.columns(2)
 
