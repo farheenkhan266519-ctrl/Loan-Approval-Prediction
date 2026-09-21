@@ -20,9 +20,13 @@ layout="centered"
 
 # =========================================================
 
+# LOAD TRAINED MODEL
+# =========================================================
+
 @st.cache_resource
 def load_model():
-return joblib.load("loan_model.pkl")
+    return joblib.load("loan_model.pkl")
+
 
 model = load_model()
 
